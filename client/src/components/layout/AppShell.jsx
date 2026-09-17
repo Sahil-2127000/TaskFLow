@@ -1,0 +1,284 @@
+import React, { useState, useEffect } from 'react';
+import { NavLink, useNavigate, useLocation } from 'react-router-dom';
+import { 
+  CheckSquare, 
+  Home, 
+  ListTodo, 
+  Calendar, 
+  LogOut, 
+  Bell, 
+  Plus, 
+  Check,
+  Tag
+} from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
+import { categoryService } from '../../services/category.service';
+import CategoriesModal from '../categories/CategoriesModal';
+
+const AppShell = ({ children, onOpenAddTask, search, onSearchChange }) => {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const [categories, setCategories] = useState([]);
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+
+  const fetchCategories = async () => {
+    try {
+      const res = await categoryService.getAllCategories();
+      if (res?.data) {
+        setCategories(res.data);
+      }
+    } catch (err) {
+      console.error('Error fetching categories in AppShell:', err);
+    }
+  };
+
+  useEffect(() => {
+    fetchCategories();
+
+    const handleCategoriesUpdate = () => {
+      fetchCategories();
+    };
+
+    window.addEventListener('taskflow:categories-updated', handleCategoriesUpdate);
+    return () => window.removeEventListener('taskflow:categories-updated', handleCategoriesUpdate);
+  }, []);
+
+  const handleCategoryCreated = (newCat) => {
+    setCategories((prev) => [...prev, newCat]);
+    window.dispatchEvent(new CustomEvent('taskflow:categories-updated', { detail: newCat }));
+  };
+
+  const handleCategoryDeleted = (deletedId) => {
+    setCategories((prev) => prev.filter((c) => c._id !== deletedId));
+    window.dispatchEvent(new CustomEvent('taskflow:categories-updated', { detail: { deletedId } }));
+  };
+
+  const handleCategoryUpdated = (updatedCat) => {
+    setCategories((prev) => prev.map((c) => (c._id === updatedCat._id ? updatedCat : c)));
+    window.dispatchEvent(new CustomEvent('taskflow:categories-updated', { detail: updatedCat }));
+  };
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/');
+  };
+
+  const navItems = [
+    { label: 'Today', path: '/today', icon: Home },
+    { label: 'My Tasks', path: '/tasks', icon: ListTodo },
+    { label: 'History', path: '/history', icon: Calendar },
+  ];
+
+  const getPageInfo = () => {
+    if (location.pathname === '/today') {
+      return { title: "Today's Tasks", subtitle: 'Focus on what matters most today' };
+    }
+    if (location.pathname === '/history') {
+      return { title: 'History', subtitle: 'Review your past accomplishments' };
+    }
+    return { title: 'My Tasks', subtitle: 'Stay organized and productive' };
+  };
+
+  const { title, subtitle } = getPageInfo();
+
+  const initials = user?.firstName
+    ? `${user.firstName[0]}${user.lastName ? user.lastName[0] : ''}`.toUpperCase()
+    : 'U';
+  const fullName = user?.firstName
+    ? `${user.firstName} ${user.lastName || ''}`.trim()
+    : 'User';
+
+  return (
+    <div className="flex min-h-screen bg-canvas font-sans">
+      {/* Sidebar / Mobile Bottom Tab Bar */}
+      <aside className="fixed bottom-0 left-0 right-0 h-16 w-full bg-surface border-t border-border z-40 flex flex-row items-center justify-around px-3 py-1.5 shadow-[0_-2px_10px_rgba(0,0,0,0.04)] md:relative md:top-0 md:h-screen md:w-60 md:flex-col md:justify-between md:border-r md:border-t-0 md:border-border md:p-6 md:shadow-none md:z-0">
+        {/* Top: Logo & Nav */}
+        <div className="w-full flex md:flex-col items-center">
+          {/* Logo */}
+          <div className="hidden md:flex items-center gap-2.5 px-2 pb-8 w-full">
+            <div className="w-8 h-8 rounded-lg bg-brand flex items-center justify-center text-white shrink-0">
+              <Check size={20} strokeWidth={3} />
+            </div>
+            <span className="text-lg font-extrabold text-ink tracking-tight">
+              TaskFlow
+            </span>
+          </div>
+
+          {/* Navigation Links */}
+          <nav className="flex flex-row md:flex-col justify-around md:justify-start w-full gap-1 md:gap-1.5">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = location.pathname === item.path;
+
+              return (
+                <NavLink
+                  key={item.path}
+                  to={item.path}
+                  className={`flex flex-col md:flex-row items-center gap-1 md:gap-3 px-3.5 py-1.5 md:py-2.5 rounded-chip text-[11.5px] md:text-sm font-semibold transition ${
+                    isActive
+                      ? 'text-brand bg-brand-soft font-bold'
+                      : 'text-muted hover:bg-gray-100/60'
+                  }`}
+                >
+                  <Icon size={18} />
+                  <span>{item.label}</span>
+                </NavLink>
+              );
+            })}
+
+            {/* Mobile Categories Button */}
+            <button
+              type="button"
+              onClick={() => setIsCategoryModalOpen(true)}
+              className="md:hidden flex flex-col items-center gap-1 px-3.5 py-1.5 rounded-chip text-[11.5px] font-semibold text-muted hover:bg-gray-100/60 transition"
+            >
+              <Tag size={18} />
+              <span>Categories</span>
+            </button>
+          </nav>
+
+          {/* Desktop Categories Section in Left Bar */}
+          <div className="hidden md:flex flex-col w-full mt-6 pt-5 border-t border-border">
+            <div className="flex items-center justify-between px-2 mb-2">
+              <span className="text-[11px] font-bold text-muted uppercase tracking-wider">
+                Categories
+              </span>
+              <button
+                type="button"
+                onClick={() => setIsCategoryModalOpen(true)}
+                title="Add Category"
+                className="p-1 rounded-md text-muted hover:text-brand hover:bg-brand-soft transition"
+              >
+                <Plus size={15} />
+              </button>
+            </div>
+
+            {/* Quick list of top categories */}
+            <div className="flex flex-col gap-0.5 max-h-36 overflow-y-auto pr-1">
+              {categories.slice(0, 6).map((cat) => (
+                <button
+                  key={cat._id}
+                  type="button"
+                  onClick={() => setIsCategoryModalOpen(true)}
+                  className="flex items-center justify-between px-2.5 py-1.5 rounded-chip text-xs text-ink hover:bg-gray-100/70 transition text-left group"
+                >
+                  <div className="flex items-center gap-2 truncate">
+                    <span
+                      className="w-2.5 h-2.5 rounded-full shrink-0"
+                      style={{ backgroundColor: cat.textColor || '#4F46E5' }}
+                    />
+                    <span className="truncate font-medium">{cat.name}</span>
+                  </div>
+                </button>
+              ))}
+            </div>
+
+            {/* See & Add Categories Button */}
+            <button
+              type="button"
+              onClick={() => setIsCategoryModalOpen(true)}
+              className="flex items-center gap-2 mt-2 px-2.5 py-2 w-full text-xs font-semibold text-brand hover:bg-brand-soft rounded-chip transition"
+            >
+              <Tag size={15} />
+              <span>See / Add Categories</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Bottom: Logout (Desktop only, mobile can use profile/logout) */}
+        <div className="hidden md:block w-full">
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="flex items-center gap-2.5 w-full px-3.5 py-2.5 rounded-chip text-sm font-medium text-danger hover:bg-danger-soft transition"
+          >
+            <LogOut size={18} />
+            <span>Logout</span>
+          </button>
+        </div>
+      </aside>
+
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col min-w-0 pb-20 md:pb-6">
+        {/* Top Header */}
+        <header className="px-4 py-4 md:px-8 md:py-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          {/* Title & Subtitle */}
+          <div>
+            <h1 className="text-xl md:text-2xl font-extrabold text-ink tracking-tight">
+              {title}
+            </h1>
+            <p className="text-xs md:text-sm text-muted mt-0.5">
+              {subtitle}
+            </p>
+          </div>
+
+          {/* Right Header Controls */}
+          <div className="flex items-center gap-3 md:gap-4 w-full sm:w-auto justify-between sm:justify-end">
+            {/* Search Input */}
+            {onSearchChange && (
+              <div className="relative flex-1 sm:flex-initial">
+                <input
+                  type="text"
+                  value={search || ''}
+                  onChange={(e) => onSearchChange(e.target.value)}
+                  placeholder="Search tasks..."
+                  className="w-full sm:w-60 px-3.5 py-2 rounded-ctl border border-border-input bg-surface text-sm text-ink outline-none shadow-card focus:border-brand transition"
+                />
+              </div>
+            )}
+
+            {/* Add Task Button */}
+            {onOpenAddTask && (
+              <button
+                type="button"
+                onClick={onOpenAddTask}
+                className="inline-flex items-center gap-1.5 bg-brand hover:bg-brand-hover text-white px-4 py-2 rounded-ctl font-semibold text-xs sm:text-sm shadow-cta transition shrink-0"
+              >
+                <Plus size={16} strokeWidth={2.5} />
+                <span>Add Task</span>
+              </button>
+            )}
+
+            {/* User Profile Avatar & Mobile Logout */}
+            <div className="flex items-center gap-2.5 shrink-0 pl-1">
+              <div className="w-8.5 h-8.5 rounded-full bg-brand text-white flex items-center justify-center font-bold text-xs">
+                {initials}
+              </div>
+              <span className="hidden sm:inline text-xs sm:text-sm font-semibold text-ink">
+                {fullName}
+              </span>
+              <button
+                type="button"
+                onClick={handleLogout}
+                title="Logout"
+                className="md:hidden p-1.5 text-muted hover:text-danger rounded-md transition"
+              >
+                <LogOut size={16} />
+              </button>
+            </div>
+          </div>
+        </header>
+
+        {/* Page Content */}
+        <main className="px-4 pb-6 md:px-8 md:pb-8 flex-1 max-w-5xl w-full">
+          {children}
+        </main>
+      </div>
+
+      {/* Categories Management Modal */}
+      <CategoriesModal
+        isOpen={isCategoryModalOpen}
+        onClose={() => setIsCategoryModalOpen(false)}
+        categories={categories}
+        onCategoryCreated={handleCategoryCreated}
+        onCategoryUpdated={handleCategoryUpdated}
+        onCategoryDeleted={handleCategoryDeleted}
+      />
+    </div>
+  );
+};
+
+export default AppShell;
+

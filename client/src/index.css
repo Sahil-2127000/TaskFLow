@@ -1,0 +1,98 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import './styles/tokens.css';
+@import "tailwindcss";
+
+@theme {
+  --color-brand: #5B5BD6;
+  --color-brand-hover: #4E4EC7;
+  --color-brand-pressed: #4646B8;
+  --color-brand-soft: #EFEEFC;
+
+  --color-ink: #15142B;
+  --color-muted: #7A7886;
+  --color-border: #EDEEF3;
+  --color-border-input: #E3E1EC;
+  --color-canvas: #F7F6FB;
+  --color-surface: #FFFFFF;
+  --color-danger: #DC2626;
+  --color-danger-hover: #B91C1C;
+  --color-danger-soft: #FEE2E2;
+  --color-success: #059669;
+  --color-success-soft: #D1FAE5;
+
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  --radius-checkbox: 5px;
+  --radius-chip: 8px;
+  --radius-ctl: 10px;
+  --radius-card: 12px;
+  --radius-modal: 16px;
+  --radius-tag: 999px;
+
+  --shadow-card: 0 1px 3px rgba(24, 24, 27, 0.05);
+  --shadow-cta: 0 6px 16px rgba(91, 91, 214, 0.28);
+  --shadow-modal: 0 26px 60px rgba(20, 18, 45, 0.34);
+}
+
+@layer base {
+  body {
+    font-family: var(--font-sans);
+    color: var(--color-ink);
+    background-color: var(--color-canvas);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  input, button, select, textarea {
+    font-family: inherit;
+    font-size: inherit;
+  }
+
+  button {
+    cursor: pointer;
+    transition: all 0.18s ease;
+  }
+
+  button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+}
+
+/* Scrollbar styles */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #D5D3E2;
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #B8B5CB;
+}
+
+/* Common Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.animate-fade {
+  animation: fadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-pop {
+  animation: popIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}

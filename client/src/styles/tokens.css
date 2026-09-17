@@ -1,0 +1,51 @@
+/* TaskFlow Design Tokens — Handoff Specifications */
+:root {
+  /* Brand colors */
+  --brand: #5B5BD6;
+  --brand-hover: #4E4EC7;
+  --brand-pressed: #4646B8;
+  --brand-soft: #EFEEFC;
+
+  /* Neutrals */
+  --ink: #15142B;
+  --muted: #7A7886;
+  --border: #EDEEF3;
+  --border-input: #E3E1EC;
+  --canvas: #F7F6FB;
+  --surface: #FFFFFF;
+  --danger: #DC2626;
+  --danger-hover: #B91C1C;
+  --danger-soft: #FEE2E2;
+  --success: #059669;
+  --success-soft: #D1FAE5;
+
+  /* Category Tag palettes (bg / text) */
+  --cat-dev-bg: #F3E8FF;
+  --cat-dev-text: #9333EA;
+  --cat-study-bg: #DBEAFE;
+  --cat-study-text: #2563EB;
+  --cat-health-bg: #D1FAE5;
+  --cat-health-text: #059669;
+  --cat-personal-bg: #E0E7FF;
+  --cat-personal-text: #4F46E5;
+  --cat-career-bg: #FEE2E2;
+  --cat-career-text: #DC2626;
+
+  /* Radii */
+  --radius-checkbox: 5px;
+  --radius-chip: 8px;
+  --radius-ctl: 10px;
+  --radius-card: 12px;
+  --radius-modal: 16px;
+  --radius-tag: 999px;
+
+  /* Shadows */
+  --shadow-card: 0 1px 3px rgba(24, 24, 27, 0.05);
+  --shadow-cta: 0 6px 16px rgba(91, 91, 214, 0.28);
+  --shadow-modal: 0 26px 60px rgba(20, 18, 45, 0.34);
+  --shadow-popover: 0 10px 25px rgba(20, 18, 45, 0.12);
+  --backdrop: rgba(24, 22, 45, 0.55);
+
+  /* Spacings */
+  --sidebar-w: 232px;
+}
