@@ -1,6 +1,6 @@
 const Category = require("../models/category.model");
 const Todo = require("../models/todo.model");
-const User = require("../models/User.model");
+const User = require("../models/user.model");
 
 //create a todo
 exports.createTodo = async(req,res)=>{

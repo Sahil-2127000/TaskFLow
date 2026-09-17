@@ -1,5 +1,5 @@
 const Category = require("../models/category.model");
-const User = require("../models/User.model");
+const User = require("../models/user.model");
 
 
 exports.createCategory = async(req,res)=>{
