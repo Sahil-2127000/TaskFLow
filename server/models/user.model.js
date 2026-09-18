@@ -60,7 +60,7 @@ UserSchema.post("save", async function(user){
     //user first name + user last name + user email
     try{
         //sending success mail
-        const result = await sendMail(user.email, "TaskFlow : Signup successful", successSignupTemplate(user.firstName , user.lastName , user.email));
+        const result = await sendMail(user.email, "TaskFlow : Signup successful", successSignupTemplate(user.fullName, user.email));
         
         if(!result){
             throw new Error("Failed to send email");
