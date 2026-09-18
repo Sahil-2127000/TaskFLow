@@ -12,7 +12,7 @@ export const authService = {
 
   /**
    * Complete registration with user details and OTP
-   * @param {Object} signupData - { firstName, lastName, email, password, confirmPassword, otp }
+   * @param {Object} signupData - { fullName, email, password, confirmPassword, otp }
    */
   async signup(signupData) {
     const response = await api.post('/auth/signup', signupData);

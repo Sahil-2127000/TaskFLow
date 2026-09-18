@@ -1,4 +1,4 @@
-const signupMailTemplate = (firstName,lastName,email) =>{
+const signupMailTemplate = (fullName,email) =>{
     return `
     <!DOCTYPE html>
 <html>
@@ -77,7 +77,7 @@ const signupMailTemplate = (firstName,lastName,email) =>{
 
     <div class="content">
 
-        <h2 class="greeting">Hello! ${firstName} ${lastName} 👋</h2>
+        <h2 class="greeting">Hello! ${fullName} 👋</h2>
 
         <p class="intro">
             Welcome to TaskFlow! Your account has been successfully created.

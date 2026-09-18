@@ -7,7 +7,7 @@ import ForgotPasswordModal from '../components/auth/ForgotPasswordModal';
 import toast from 'react-hot-toast';
 
 const LoginPage = () => {
-  
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -175,7 +175,7 @@ const LoginPage = () => {
           <h4 className="text-base font-semibold text-ink mb-1">
             Good to see you again!
           </h4>
-          <p className="text-xs text-muted max-w-[200px]">
+          <p className="text-xs text-muted max-w-50">
             Let's finish what we started.
           </p>
         </div>
