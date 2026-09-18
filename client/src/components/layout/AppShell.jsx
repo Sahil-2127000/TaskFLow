@@ -93,11 +93,11 @@ const AppShell = ({ children, onOpenAddTask, search, onSearchChange }) => {
   return (
     <div className="flex min-h-screen bg-canvas font-sans">
       {/* Sidebar / Mobile Bottom Tab Bar */}
-      <aside className="fixed bottom-0 left-0 right-0 h-16 w-full bg-surface border-t border-border z-40 flex flex-row items-center justify-around px-3 py-1.5 shadow-[0_-2px_10px_rgba(0,0,0,0.04)] md:relative md:top-0 md:h-screen md:w-60 md:flex-col md:justify-between md:border-r md:border-t-0 md:border-border md:p-6 md:shadow-none md:z-0">
+      <aside className="fixed bottom-0 left-0 right-0 h-16 w-full bg-surface border-t border-border z-40 flex flex-row items-center justify-around px-3 py-1.5 shadow-[0_-2px_10px_rgba(0,0,0,0.04)] lg:relative lg:top-0 lg:h-screen lg:w-60 lg:flex-col lg:justify-between lg:border-r lg:border-t-0 lg:border-border lg:p-6 lg:shadow-none lg:z-0">
         {/* Top: Logo & Nav */}
-        <div className="w-full flex md:flex-col items-center">
+        <div className="w-full flex lg:flex-col items-center">
           {/* Logo */}
-          <div className="hidden md:flex items-center gap-2.5 px-2 pb-8 w-full">
+          <div className="hidden lg:flex items-center gap-2.5 px-2 pb-8 w-full">
             <div className="w-8 h-8 rounded-lg bg-brand flex items-center justify-center text-white shrink-0">
               <Check size={20} strokeWidth={3} />
             </div>
@@ -107,7 +107,7 @@ const AppShell = ({ children, onOpenAddTask, search, onSearchChange }) => {
           </div>
 
           {/* Navigation Links */}
-          <nav className="flex flex-row md:flex-col justify-around md:justify-start w-full gap-1 md:gap-1.5">
+          <nav className="flex flex-row lg:flex-col justify-around lg:justify-start w-full gap-1 lg:gap-1.5">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = location.pathname === item.path;
@@ -116,7 +116,7 @@ const AppShell = ({ children, onOpenAddTask, search, onSearchChange }) => {
                 <NavLink
                   key={item.path}
                   to={item.path}
-                  className={`flex flex-col md:flex-row items-center gap-1 md:gap-3 px-3.5 py-1.5 md:py-2.5 rounded-chip text-[11.5px] md:text-sm font-semibold transition ${
+                  className={`flex flex-col lg:flex-row items-center gap-1 lg:gap-3 px-3.5 py-1.5 lg:py-2.5 rounded-chip text-[11.5px] lg:text-sm font-semibold transition ${
                     isActive
                       ? 'text-brand bg-brand-soft font-bold'
                       : 'text-muted hover:bg-gray-100/60'
@@ -132,7 +132,7 @@ const AppShell = ({ children, onOpenAddTask, search, onSearchChange }) => {
             <button
               type="button"
               onClick={() => setIsCategoryModalOpen(true)}
-              className="md:hidden flex flex-col items-center gap-1 px-3.5 py-1.5 rounded-chip text-[11.5px] font-semibold text-muted hover:bg-gray-100/60 transition"
+              className="lg:hidden flex flex-col items-center gap-1 px-3.5 py-1.5 rounded-chip text-[11.5px] font-semibold text-muted hover:bg-gray-100/60 transition"
             >
               <Tag size={18} />
               <span>Categories</span>
@@ -140,7 +140,7 @@ const AppShell = ({ children, onOpenAddTask, search, onSearchChange }) => {
           </nav>
 
           {/* Desktop Categories Section in Left Bar */}
-          <div className="hidden md:flex flex-col w-full mt-6 pt-5 border-t border-border">
+          <div className="hidden lg:flex flex-col w-full mt-6 pt-5 border-t border-border">
             <div className="flex items-center justify-between px-2 mb-2">
               <span className="text-[11px] font-bold text-muted uppercase tracking-wider">
                 Categories
@@ -188,7 +188,7 @@ const AppShell = ({ children, onOpenAddTask, search, onSearchChange }) => {
         </div>
 
         {/* Bottom: Logout (Desktop only, mobile can use profile/logout) */}
-        <div className="hidden md:block w-full">
+        <div className="hidden lg:block w-full">
           <button
             type="button"
             onClick={handleLogout}
@@ -201,68 +201,86 @@ const AppShell = ({ children, onOpenAddTask, search, onSearchChange }) => {
       </aside>
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 pb-20 md:pb-6">
-        {/* Top Header */}
-        <header className="px-4 py-4 md:px-8 md:py-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          {/* Title & Subtitle */}
-          <div>
-            <h1 className="text-xl md:text-2xl font-extrabold text-ink tracking-tight">
-              {title}
-            </h1>
-            <p className="text-xs md:text-sm text-muted mt-0.5">
-              {subtitle}
-            </p>
-          </div>
+      <div className="flex-1 flex flex-col min-w-0 pb-20 lg:pb-6 overflow-x-hidden">
 
-          {/* Right Header Controls */}
-          <div className="flex items-center gap-3 md:gap-4 w-full sm:w-auto justify-between sm:justify-end">
-            {/* Search Input */}
-            {onSearchChange && (
-              <div className="relative flex-1 sm:flex-initial">
+        {/* Top Header — always a single row */}
+        <header className="px-4 pt-4 pb-3 lg:px-8 lg:pt-6 lg:pb-4 w-full max-w-5xl mx-auto">
+
+          {/* Row 1: Title (left) + Controls (right) — never wraps */}
+          <div className="flex items-center justify-between gap-3">
+
+            {/* Left: Page Title */}
+            <div className="min-w-0 flex-1">
+              <h1 className="text-lg lg:text-2xl font-extrabold text-ink tracking-tight leading-tight truncate">
+                {title}
+              </h1>
+              <p className="text-xs text-muted mt-0.5 hidden lg:block truncate">
+                {subtitle}
+              </p>
+            </div>
+
+            {/* Right: Search (desktop only) + Add Task + Avatar */}
+            <div className="flex items-center gap-2 lg:gap-3 shrink-0">
+
+              {/* Search — hidden on mobile, shown md+ */}
+              {onSearchChange && (
                 <input
                   type="text"
                   value={search || ''}
                   onChange={(e) => onSearchChange(e.target.value)}
                   placeholder="Search tasks..."
-                  className="w-full sm:w-60 px-3.5 py-2 rounded-ctl border border-border-input bg-surface text-sm text-ink outline-none shadow-card focus:border-brand transition"
+                  className="hidden lg:block w-56 xl:w-64 px-3.5 py-2 rounded-ctl border border-border-input bg-surface text-sm text-ink outline-none shadow-card focus:border-brand transition"
                 />
-              </div>
-            )}
+              )}
 
-            {/* Add Task Button */}
-            {onOpenAddTask && (
-              <button
-                type="button"
-                onClick={onOpenAddTask}
-                className="inline-flex items-center gap-1.5 bg-brand hover:bg-brand-hover text-white px-4 py-2 rounded-ctl font-semibold text-xs sm:text-sm shadow-cta transition shrink-0"
-              >
-                <Plus size={16} strokeWidth={2.5} />
-                <span>Add Task</span>
-              </button>
-            )}
+              {/* Add Task Button */}
+              {onOpenAddTask && (
+                <button
+                  type="button"
+                  onClick={onOpenAddTask}
+                  className="inline-flex items-center gap-1.5 bg-brand hover:bg-brand-hover text-white px-3 py-2 lg:px-4 rounded-ctl font-semibold text-xs lg:text-sm shadow-cta transition shrink-0"
+                >
+                  <Plus size={15} strokeWidth={2.5} />
+                  <span>Add Task</span>
+                </button>
+              )}
 
-            {/* User Profile Avatar & Mobile Logout */}
-            <div className="flex items-center gap-2.5 shrink-0 pl-1">
-              <div className="w-8.5 h-8.5 rounded-full bg-brand text-white flex items-center justify-center font-bold text-xs">
-                {initials}
+              {/* Avatar + Name + Mobile Logout */}
+              <div className="flex items-center gap-1.5 lg:gap-2 shrink-0">
+                <div className="w-8 h-8 rounded-full bg-brand text-white flex items-center justify-center font-bold text-xs shrink-0">
+                  {initials}
+                </div>
+                <span className="hidden lg:inline text-sm font-semibold text-ink whitespace-nowrap">
+                  {fullName}
+                </span>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  title="Logout"
+                  className="lg:hidden p-1.5 text-muted hover:text-danger rounded-md transition"
+                >
+                  <LogOut size={16} />
+                </button>
               </div>
-              <span className="hidden sm:inline text-xs sm:text-sm font-semibold text-ink">
-                {fullName}
-              </span>
-              <button
-                type="button"
-                onClick={handleLogout}
-                title="Logout"
-                className="md:hidden p-1.5 text-muted hover:text-danger rounded-md transition"
-              >
-                <LogOut size={16} />
-              </button>
             </div>
           </div>
+
+          {/* Row 2: Search on mobile — full width below title row */}
+          {onSearchChange && (
+            <div className="lg:hidden mt-3">
+              <input
+                type="text"
+                value={search || ''}
+                onChange={(e) => onSearchChange(e.target.value)}
+                placeholder="Search tasks..."
+                className="w-full px-3.5 py-2 rounded-ctl border border-border-input bg-surface text-sm text-ink outline-none shadow-card focus:border-brand transition"
+              />
+            </div>
+          )}
         </header>
 
-        {/* Page Content */}
-        <main className="px-4 pb-6 md:px-8 md:pb-8 flex-1 max-w-5xl w-full">
+        {/* Page Content — same max-width as header so right edges align */}
+        <main className="px-4 pb-6 lg:px-8 lg:pb-8 flex-1 max-w-5xl w-full mx-auto">
           {children}
         </main>
       </div>

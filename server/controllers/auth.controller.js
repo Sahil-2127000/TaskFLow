@@ -33,7 +33,7 @@ exports.sendOtp = async (req , res ) =>{
             });
         }
         
-        //purge any previous OTPs for this email
+        //delete any previous OTPs for this email
         await OTP.deleteMany({ email: cleanEmail });
 
         //creating otp
@@ -74,9 +74,9 @@ exports.sendOtp = async (req , res ) =>{
 exports.signupController = async(req,res)=>{
     try{
 
-        const{email , password , confirmPassword , firstName , lastName , otp} = req.body;
+        const{email , password , confirmPassword , fullName , otp} = req.body;
 
-        if(!email || typeof email !== "string" || !password || typeof password !== "string" || !confirmPassword || !firstName || !lastName || !otp){
+        if(!email || typeof email !== "string" || !password || typeof password !== "string" || !confirmPassword || !fullName || !otp){
             return res.status(400).json({
                 success:false,
                 message: "All fields are required and must be valid",
@@ -144,8 +144,7 @@ exports.signupController = async(req,res)=>{
         const user = await User.create({
             email: cleanEmail,
             password : hashedPassword,
-            firstName: firstName.trim(),
-            lastName: lastName.trim(),
+            fullName: fullName.trim(),
             categories:[],
             tasks:[]
         });
