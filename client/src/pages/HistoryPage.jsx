@@ -7,7 +7,7 @@ import EmptyState from '../components/ui/EmptyState';
 import { todoService, categoryService } from '../services';
 import toast from 'react-hot-toast';
 import { format, isToday, isYesterday, parseISO } from 'date-fns';
-import { Calendar as CalendarIcon } from 'lucide-react';
+import { Calendar as CalendarIcon, ChevronDown } from 'lucide-react';
 
 const HistoryPage = () => {
   const [tasks, setTasks] = useState([]);
@@ -16,6 +16,14 @@ const HistoryPage = () => {
   const [selectedTask, setSelectedTask] = useState(null);
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [taskToDelete, setTaskToDelete] = useState(null);
+  const [collapsedDates, setCollapsedDates] = useState({});
+
+  const toggleDateCollapse = (dateKey) => {
+    setCollapsedDates((prev) => ({
+      ...prev,
+      [dateKey]: !prev[dateKey],
+    }));
+  };
 
   const fetchHistory = async () => {
     try {
@@ -135,40 +143,60 @@ const HistoryPage = () => {
             const completedCount = dayTasks.filter((t) => t.status === 'completed').length;
             const total = dayTasks.length;
 
+            const isCollapsed = !!collapsedDates[dateKey];
+
             return (
               <div
                 key={dateKey}
-                className="bg-surface rounded-card shadow-card border border-border overflow-hidden"
+                className="bg-surface rounded-card shadow-card border border-border overflow-hidden transition-all duration-200"
               >
-                {/* Date Group Header */}
-                <div className="px-4 py-3 sm:px-5 sm:py-3.5 bg-[#FAFAFD] border-b border-border flex items-center justify-between">
+                {/* Date Group Header — Clickable accordion toggle */}
+                <button
+                  type="button"
+                  onClick={() => toggleDateCollapse(dateKey)}
+                  className={`w-full px-4 py-3 sm:px-5 sm:py-3.5 bg-[#FAFAFD] hover:bg-gray-100/70 transition flex items-center justify-between text-left select-none ${
+                    !isCollapsed ? 'border-b border-border' : ''
+                  }`}
+                  aria-expanded={!isCollapsed}
+                >
                   <div className="flex items-center gap-2">
-                    <CalendarIcon size={16} className="text-brand" />
+                    <CalendarIcon size={16} className="text-brand shrink-0" />
                     <span className="text-xs sm:text-sm font-bold text-ink">
                       {formatHeaderDate(dateKey)}
                     </span>
                   </div>
 
-                  <span className="text-[11px] sm:text-xs font-medium text-muted">
-                    {completedCount} / {total} completed
-                  </span>
-                </div>
+                  <div className="flex items-center gap-2.5">
+                    <span className="text-[11px] sm:text-xs font-medium text-muted">
+                      {completedCount} / {total} completed
+                    </span>
+                    <div
+                      className={`p-1 rounded-md text-muted hover:text-ink transition-transform duration-200 ${
+                        isCollapsed ? '-rotate-90' : 'rotate-0'
+                      }`}
+                    >
+                      <ChevronDown size={16} />
+                    </div>
+                  </div>
+                </button>
 
                 {/* Day Tasks List */}
-                <div>
-                  {dayTasks.map((task) => (
-                    <TaskRow
-                      key={task._id}
-                      task={task}
-                      onToggleStatus={handleToggleStatus}
-                      onEdit={(t) => {
-                        setSelectedTask(t);
-                        setIsTaskModalOpen(true);
-                      }}
-                      onDelete={(t) => setTaskToDelete(t)}
-                    />
-                  ))}
-                </div>
+                {!isCollapsed && (
+                  <div className="animate-fade">
+                    {dayTasks.map((task) => (
+                      <TaskRow
+                        key={task._id}
+                        task={task}
+                        onToggleStatus={handleToggleStatus}
+                        onEdit={(t) => {
+                          setSelectedTask(t);
+                          setIsTaskModalOpen(true);
+                        }}
+                        onDelete={(t) => setTaskToDelete(t)}
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
             );
           })}
