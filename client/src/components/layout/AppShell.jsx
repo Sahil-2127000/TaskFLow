@@ -22,6 +22,7 @@ const AppShell = ({ children, onOpenAddTask, search, onSearchChange }) => {
 
   const [categories, setCategories] = useState([]);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+  const [avatarError, setAvatarError] = useState(false);
 
   const fetchCategories = async () => {
     try {
@@ -249,17 +250,18 @@ const AppShell = ({ children, onOpenAddTask, search, onSearchChange }) => {
               )}
 
               {/* Avatar + Name + Mobile Logout */}
-              <div className="flex items-center gap-1.5 lg:gap-2.5 shrink-0">
-                <div className="w-8 h-8 rounded-full overflow-hidden bg-brand text-white flex items-center justify-center font-bold text-xs shrink-0 border border-brand/20 shadow-xs">
-                  <img
-                    src={diceBearAvatarUrl}
-                    alt={displayName}
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      e.currentTarget.style.display = 'none';
-                    }}
-                  />
-                  <span className="text-[11px] font-bold">{initials}</span>
+              <div className="flex items-center gap-2 lg:gap-2.5 shrink-0">
+                <div className="w-8 h-8 rounded-full overflow-hidden bg-brand text-white flex items-center justify-center font-bold text-xs shrink-0 ring-2 ring-brand/15 shadow-xs select-none">
+                  {!avatarError ? (
+                    <img
+                      src={diceBearAvatarUrl}
+                      alt={displayName}
+                      className="w-full h-full object-cover"
+                      onError={() => setAvatarError(true)}
+                    />
+                  ) : (
+                    <span className="text-xs font-bold">{initials}</span>
+                  )}
                 </div>
                 <span className="hidden lg:inline text-sm font-semibold text-ink whitespace-nowrap">
                   {displayName}
