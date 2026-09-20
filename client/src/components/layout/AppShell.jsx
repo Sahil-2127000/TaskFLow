@@ -83,7 +83,7 @@ const AppShell = ({ children, onOpenAddTask, search, onSearchChange }) => {
 
   const { title, subtitle } = getPageInfo();
 
-  const displayName = (user?.fullName || user?.name || (user?.firstName ? `${user.firstName} ${user.lastName || ''}` : '') || (user?.email ? user.email.split('@')[0] : 'User')).trim();
+  const displayName = (user?.fullName || (user?.email ? user.email.split('@')[0] : 'User')).trim();
 
   // Compute initials (e.g. "Sahil Maurya" -> "SM", "Sahil" -> "S")
   const nameParts = displayName.split(/\s+/).filter(Boolean);
