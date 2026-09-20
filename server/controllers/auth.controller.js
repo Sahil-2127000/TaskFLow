@@ -1,4 +1,5 @@
 const User = require("../models/user.model");
+const Category = require("../models/category.model");
 const crypto = require("crypto");
 const OTP = require("../models/otp.model");
 const { sendMail } = require("../utils/sendMail.util");
@@ -7,6 +8,14 @@ const forgotPasswordOTPTemplate = require("../templates/forgotPasswordOTP");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 require('dotenv').config();
+
+const DEFAULT_CATEGORIES = [
+  { name: 'Development', color: '#F3E8FF', textColor: '#9333EA' },
+  { name: 'Study', color: '#DBEAFE', textColor: '#2563EB' },
+  { name: 'Health', color: '#D1FAE5', textColor: '#059669' },
+  { name: 'Personal', color: '#E0E7FF', textColor: '#4F46E5' },
+  { name: 'Career', color: '#FEE2E2', textColor: '#DC2626' },
+];
 
 // sending otp to the user email address
 exports.sendOtp = async (req , res ) =>{
@@ -149,16 +158,31 @@ exports.signupController = async(req,res)=>{
             tasks:[]
         });
 
-        const userResponse = user.toObject();
-
-        delete userResponse.password;
-
         if(!user){
             return res.status(400).json({
                 success:false,
                 message: "Failed to create user",
             });
         }
+
+        // Seed default categories directly into MongoDB for this user
+        try {
+            const seedCats = await Category.insertMany(
+                DEFAULT_CATEGORIES.map((cat) => ({
+                    name: cat.name,
+                    color: cat.color,
+                    textColor: cat.textColor,
+                    user: user._id,
+                }))
+            );
+            user.categories = seedCats.map((c) => c._id);
+            await user.save();
+        } catch (seedErr) {
+            console.error("Error seeding default categories:", seedErr);
+        }
+
+        const userResponse = user.toObject();
+        delete userResponse.password;
 
         //creating token
         const token = await jwt.sign({_id : user._id},

@@ -31,13 +31,6 @@ const LandingPage = () => {
               Get Started
               <ArrowRight size={18} />
             </Link>
-
-            <a
-              href="#features"
-              className="px-7 py-3.5 rounded-ctl bg-surface text-ink font-semibold text-sm border border-border shadow-card hover:bg-gray-50 transition"
-            >
-              Learn More
-            </a>
           </div>
         </div>
 

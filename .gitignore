@@ -1,0 +1,19 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+*.env
+.env.*
+!.env.example
+
+# Dependencies
+node_modules/
+client/node_modules/
+server/node_modules/
+
+# Build
+client/dist/
+dist/
+dist-ssr/

@@ -9,6 +9,7 @@ import SignupPage from './pages/SignupPage';
 import TasksPage from './pages/TasksPage';
 import TodayPage from './pages/TodayPage';
 import HistoryPage from './pages/HistoryPage';
+import NotFoundPage from './pages/NotFoundPage';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -84,8 +85,8 @@ function AppRoutes() {
         }
       />
 
-      {/* Catch-all fallback */}
-      <Route path="*" element={<Navigate to="/" replace />} />
+      {/* 404 Catch-all */}
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
 }

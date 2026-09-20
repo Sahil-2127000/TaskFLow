@@ -7,14 +7,6 @@ import EmptyState from '../components/ui/EmptyState';
 import { todoService, categoryService } from '../services';
 import toast from 'react-hot-toast';
 
-const DEFAULT_CATEGORIES = [
-  { _id: 'cat-dev', name: 'Development', color: '#F3E8FF', textColor: '#9333EA' },
-  { _id: 'cat-study', name: 'Study', color: '#DBEAFE', textColor: '#2563EB' },
-  { _id: 'cat-health', name: 'Health', color: '#D1FAE5', textColor: '#059669' },
-  { _id: 'cat-personal', name: 'Personal', color: '#E0E7FF', textColor: '#4F46E5' },
-  { _id: 'cat-career', name: 'Career', color: '#FEE2E2', textColor: '#DC2626' },
-];
-
 const TasksPage = () => {
   const [tasks, setTasks] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -33,24 +25,9 @@ const TasksPage = () => {
     try {
       setLoading(true);
 
-      // Fetch user categories
+      // Fetch user categories from server (auto-seeded with valid ObjectIds)
       const catRes = await categoryService.getAllCategories();
-      let userCats = catRes?.data || [];
-
-      // If user has no categories yet, create/seed the defaults
-      if (userCats.length === 0) {
-        try {
-            const createPromises = DEFAULT_CATEGORIES.map((c) =>
-            categoryService.createCategory(c.name)
-          );
-          await Promise.all(createPromises);
-          const updatedCatRes = await categoryService.getAllCategories();
-          userCats = updatedCatRes?.data || DEFAULT_CATEGORIES;
-        } catch {
-          userCats = DEFAULT_CATEGORIES;
-        }
-      }
-      setCategories(userCats);
+      setCategories(catRes?.data || []);
 
       // Fetch tasks
       const taskRes = await todoService.getAllTodos();

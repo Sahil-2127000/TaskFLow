@@ -174,7 +174,7 @@ const CategoriesModal = ({
               className={`p-4 rounded-ctl border transition ${
                 editingCategory
                   ? 'bg-brand-soft/40 border-brand/40 shadow-sm'
-                  : 'bg-[#F7F6FB] border-border'
+                  : 'bg-canvas border-border'
               } flex flex-col gap-3.5`}
             >
               <div className="flex items-center justify-between">

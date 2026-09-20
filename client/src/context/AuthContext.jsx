@@ -4,20 +4,37 @@ import { authService } from '../services';
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => {
+    try {
+      const savedUser = localStorage.getItem('taskflow_user');
+      return savedUser ? JSON.parse(savedUser) : null;
+    } catch {
+      return null;
+    }
+  });
   const [loading, setLoading] = useState(true);
 
   // Check if session is already active on initial page load
   const checkAuth = async () => {
+    const token = localStorage.getItem('taskflow_token');
     try {
       const data = await authService.getMe();
       if (data?.success && data?.user) {
         setUser(data.user);
+        localStorage.setItem('taskflow_user', JSON.stringify(data.user));
       } else {
-        setUser(null);
+        if (!token) {
+          setUser(null);
+          localStorage.removeItem('taskflow_user');
+        }
       }
-    } catch {
-      setUser(null);
+    } catch (err) {
+      // If 401 Unauthorized, clear stored state
+      if (err.response?.status === 401) {
+        setUser(null);
+        localStorage.removeItem('taskflow_token');
+        localStorage.removeItem('taskflow_user');
+      }
     } finally {
       setLoading(false);
     }
@@ -36,7 +53,14 @@ export const AuthProvider = ({ children }) => {
   const signup = async (signupData) => {
     const data = await authService.signup(signupData);
     if (data?.success) {
-      setUser(data.userResponse || data.user);
+      const userData = data.userResponse || data.user;
+      setUser(userData);
+      if (data.userResponse?.token) {
+        localStorage.setItem('taskflow_token', data.userResponse.token);
+      }
+      if (userData) {
+        localStorage.setItem('taskflow_user', JSON.stringify(userData));
+      }
     }
     return data;
   };
@@ -46,6 +70,12 @@ export const AuthProvider = ({ children }) => {
     const data = await authService.login(email, password);
     if (data?.success) {
       setUser(data.user);
+      if (data.token) {
+        localStorage.setItem('taskflow_token', data.token);
+      }
+      if (data.user) {
+        localStorage.setItem('taskflow_user', JSON.stringify(data.user));
+      }
     }
     return data;
   };
@@ -58,6 +88,8 @@ export const AuthProvider = ({ children }) => {
       console.error('Error logging out:', err);
     } finally {
       setUser(null);
+      localStorage.removeItem('taskflow_token');
+      localStorage.removeItem('taskflow_user');
     }
   };
 
@@ -69,3 +101,4 @@ export const AuthProvider = ({ children }) => {
 };
 
 export const useAuth = () => useContext(AuthContext);
+
