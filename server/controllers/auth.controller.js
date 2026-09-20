@@ -277,10 +277,9 @@ exports.loginController = async(req,res) =>{
         );
 
         const userResponse = {
-                _id:user._id,
-                email:user.email,
-                firstName:user.firstName,
-                lastName:user.lastName
+            _id: user._id,
+            email: user.email,
+            fullName: user.fullName,
         };
         
 

@@ -83,12 +83,15 @@ const AppShell = ({ children, onOpenAddTask, search, onSearchChange }) => {
 
   const { title, subtitle } = getPageInfo();
 
-  const initials = user?.firstName
-    ? `${user.firstName[0]}${user.lastName ? user.lastName[0] : ''}`.toUpperCase()
-    : 'U';
-  const fullName = user?.firstName
-    ? `${user.firstName} ${user.lastName || ''}`.trim()
-    : 'User';
+  const displayName = (user?.fullName || user?.name || (user?.firstName ? `${user.firstName} ${user.lastName || ''}` : '') || (user?.email ? user.email.split('@')[0] : 'User')).trim();
+
+  // Compute initials (e.g. "Sahil Maurya" -> "SM", "Sahil" -> "S")
+  const nameParts = displayName.split(/\s+/).filter(Boolean);
+  const initials = nameParts.length > 1
+    ? `${nameParts[0][0]}${nameParts[nameParts.length - 1][0]}`.toUpperCase()
+    : `${nameParts[0]?.[0] || 'U'}`.toUpperCase();
+
+  const diceBearAvatarUrl = `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(displayName)}&backgroundColor=4f46e5&textColor=ffffff&fontSize=42&fontWeight=700`;
 
   return (
     <div className="flex min-h-screen bg-canvas font-sans">
@@ -246,12 +249,20 @@ const AppShell = ({ children, onOpenAddTask, search, onSearchChange }) => {
               )}
 
               {/* Avatar + Name + Mobile Logout */}
-              <div className="flex items-center gap-1.5 lg:gap-2 shrink-0">
-                <div className="w-8 h-8 rounded-full bg-brand text-white flex items-center justify-center font-bold text-xs shrink-0">
-                  {initials}
+              <div className="flex items-center gap-1.5 lg:gap-2.5 shrink-0">
+                <div className="w-8 h-8 rounded-full overflow-hidden bg-brand text-white flex items-center justify-center font-bold text-xs shrink-0 border border-brand/20 shadow-xs">
+                  <img
+                    src={diceBearAvatarUrl}
+                    alt={displayName}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                    }}
+                  />
+                  <span className="text-[11px] font-bold">{initials}</span>
                 </div>
                 <span className="hidden lg:inline text-sm font-semibold text-ink whitespace-nowrap">
-                  {fullName}
+                  {displayName}
                 </span>
                 <button
                   type="button"
